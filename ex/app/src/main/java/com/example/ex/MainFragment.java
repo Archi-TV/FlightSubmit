@@ -31,8 +31,10 @@ public class MainFragment extends Fragment {
     private final Observer<String> messageObserver = new Observer<String>() {
         @Override
         public void onChanged(final String message) {
-            final FragmentActivity activity = getActivity();
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+            if (message != null){
+                final FragmentActivity activity = getActivity();
+                Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+            }
         }
     };
 

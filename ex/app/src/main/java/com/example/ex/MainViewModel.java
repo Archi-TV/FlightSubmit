@@ -31,11 +31,11 @@ public class MainViewModel extends ViewModel {
     private final ArrayList<AbsResultCell> tupleArrayList = new ArrayList<>();
     private final State state;
 
-    private MutableLiveData<String> toastMessageObserver = new MutableLiveData();
+    private final MutableLiveData<String> toastMessageObserver = new MutableLiveData<>();
 
     private int progressBarStatus;
     private final Handler progressBarHandler = new Handler();
-    private long loading;
+
 
     public MainViewModel() {
         state = new State();
@@ -133,40 +133,38 @@ public class MainViewModel extends ViewModel {
 
     private void setupLoading(final ProgressBar progressBar, final Button button, final EditText editText){
         progressBarStatus = 0;
-        loading = 0;
         progressBar.setVisibility(View.VISIBLE);
         enableViews(false, button, editText);
     }
 
     private void runAsync(final ProgressBar progressBar, final Button button, final EditText editText){
-        new Thread(new Runnable(){
-            public void run(){
-                while (progressBarStatus < HUNDRED){
-                    progressBarStatus = simulateDoingSmthInteresting();
-                    try {
-                        Thread.sleep(DEFAULT_SLEEP_TIME);
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        new Thread(new Runnable() {
+            public void run() {
+                while (progressBarStatus < 100) {
+                    progressBarStatus += 30;
+                    // Update the progress bar
                     progressBarHandler.post(new Runnable() {
                         public void run() {
                             progressBar.setProgress(progressBarStatus);
-                            if (progressBarStatus == HUNDRED){
+                            if (progressBarStatus >= 100){
                                 progressBar.setVisibility(View.GONE);
-                                enableViews(true, button, editText);
                                 show();
+                                enableViews(true, button, editText);
                             }
                         }
                     });
-                }
-                try {
-                    Thread.sleep(2 * DEFAULT_SLEEP_TIME);
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        // Sleep for 200 milliseconds.
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }).start();
     }
+
+
 
     private void enableViews(final boolean enabled, final Button button, final EditText editText){
         button.setEnabled(enabled);
@@ -174,24 +172,8 @@ public class MainViewModel extends ViewModel {
         editText.setEnabled(enabled);
     }
 
-    private int simulateDoingSmthInteresting() {
-
-        while (loading <= UPPER_BOUND) {
-            ++loading;
-
-            if (loading == UPPER_BOUND / 3) {
-                return HUNDRED / 3;
-            } else if (loading == UPPER_BOUND * 2 / 3) {
-                return HUNDRED * 2 / 3;
-            } else if (loading == UPPER_BOUND * 4 / 5) {
-                return HUNDRED * 4 / 5;
-            }
-        }
-
-        return HUNDRED;
-    }
-
     private void show(){
         toastMessageObserver.setValue(state.toString());
+        toastMessageObserver.setValue(null);
     }
 }
