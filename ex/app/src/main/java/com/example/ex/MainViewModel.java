@@ -8,7 +8,11 @@ public class MainViewModel extends ViewModel {
     private final MutableLiveData<State> tupleLiveData = new MutableLiveData<>();
 
     public MainViewModel() {
-        tupleLiveData.setValue(new State());
+        select(new State());
+    }
+
+    public void select(State state) {
+        tupleLiveData.setValue(state);
     }
 
     public MutableLiveData<State> getUserMutableLiveData() {

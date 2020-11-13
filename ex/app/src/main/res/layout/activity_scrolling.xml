@@ -59,7 +59,7 @@
                     android:text="@string/flihgt_info" />
 
                 <RatingBar
-                    android:id="@+id/ratingBar2"
+                    android:id="@+id/ratingBarFlight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:numStars="5"

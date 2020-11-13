@@ -1,6 +1,5 @@
 package com.example.ex;
 
-import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,14 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 public class MainFragment extends Fragment {
 
 
     private MainViewModel viewModel;
     private RecyclerView recyclerView;
-    private IAttachable listener;
 
 
         private final Observer<State> updateObserver = new Observer<State>() {
@@ -33,19 +30,6 @@ public class MainFragment extends Fragment {
             }
         };
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        if (context instanceof IAttachable) {
-            listener = (IAttachable) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        listener = null;
-        super.onDetach();
-    }
 
     static MainFragment newInstance() {
         return new MainFragment();
@@ -67,18 +51,8 @@ public class MainFragment extends Fragment {
         }
         recyclerView = getView().findViewById(R.id.rv_main);
 
-        try {
-            viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        } catch (Exception e) {
-            show(e.getMessage());
-        }
+        viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), updateObserver);
-        listener.passStateToActivity(viewModel.getUserMutableLiveData().getValue());
-    }
-
-
-    private void show(final String text){
-        Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
     }
 
     @Override

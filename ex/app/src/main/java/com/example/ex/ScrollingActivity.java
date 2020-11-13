@@ -5,21 +5,36 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import android.util.Log;
 import android.widget.RatingBar;
 
-public class ScrollingActivity extends AppCompatActivity implements IAttachable {
+public class ScrollingActivity extends AppCompatActivity{
 
-    private State state;
     private RatingBar rb;
+    private MainViewModel viewModel;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
 
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
         initToolBar();
         initRatingBar();
+
+        viewModel.getUserMutableLiveData().observe(this, new Observer<State>() {
+            @Override
+            public void onChanged(State state) {
+                if (state == null) {
+                    return;
+                }
+                rb.setRating(state.getFlight());
+            }
+        });
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -30,18 +45,12 @@ public class ScrollingActivity extends AppCompatActivity implements IAttachable 
 
     private void initRatingBar() {
 
-        rb = findViewById(R.id.ratingBar2);
-
-        if (state == null) {
-            rb.setRating(0);
-        }  else {
-            rb.setRating(state.getFlight());
-        }
+        rb = findViewById(R.id.ratingBarFlight);
 
         rb.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                state.setFlight((int)rating);
+                viewModel.getUserMutableLiveData().getValue().setFlight((int)rating);
                 Log.i("RatingToolBar", Integer.toString((int)rating));
             }
         });
@@ -61,8 +70,9 @@ public class ScrollingActivity extends AppCompatActivity implements IAttachable 
     }
 
     @Override
-    public void passStateToActivity(final State state) {
-        this.state = state;
-        rb.setRating(state.getFlight());
+    protected void onDestroy() {
+        super.onDestroy();
+        viewModel = null;
+        rb = null;
     }
 }
