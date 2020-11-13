@@ -24,12 +24,15 @@ public class AbsResultCell {
     @Override
     @SuppressWarnings({"SimplifiableIfStatement", "RedundantIfStatement"})
     public boolean equals(final Object o) {
-        return false;
+        if (o == null)
+            return false;
+        AbsResultCell y = (AbsResultCell) o;
+        return y.viewType == this.viewType ;
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        return (int) viewType.hashCode();
     }
 
     @Override
@@ -39,6 +42,3 @@ public class AbsResultCell {
     }
 
 }
-
-
-

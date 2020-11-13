@@ -7,11 +7,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class MainFragment extends Fragment {
 
@@ -24,11 +24,17 @@ public class MainFragment extends Fragment {
             @Override
             public void onChanged(final State tupleArrayList) {
                 final FragmentActivity activity = getActivity();
-                RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(activity, viewModel);
-                recyclerView.setLayoutManager(new LinearLayoutManager(activity));
-                recyclerView.setAdapter(recyclerViewAdapter);
+                viewModel.update(activity, recyclerView);
             }
         };
+
+    private final Observer<String> messageObserver = new Observer<String>() {
+        @Override
+        public void onChanged(final String message) {
+            final FragmentActivity activity = getActivity();
+            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+        }
+    };
 
 
     static MainFragment newInstance() {
@@ -53,6 +59,7 @@ public class MainFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
         viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), updateObserver);
+        viewModel.getToastObserver().observe(getViewLifecycleOwner(), messageObserver);
     }
 
     @Override
