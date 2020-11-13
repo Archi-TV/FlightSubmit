@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ex.R;
 import com.example.ex.TripListActionListener;
 import com.example.ex.cells.AbsResultCell;
-import com.example.ex.cells.Tuple;
+import com.example.ex.cells.RatingCell;
 
 public final class RecyclerViewViewHolder extends AbsResultHolder {
     private final RatingBar ratingBar;
@@ -28,17 +28,17 @@ public final class RecyclerViewViewHolder extends AbsResultHolder {
     }
 
 
-    public void bind(@NonNull final AbsResultCell tuple) {
+    public void bind(@NonNull final AbsResultCell absCell) {
 
-        final Tuple cell = (Tuple)tuple;
+        final RatingCell cell = (RatingCell)absCell;
         txtView_title.setText(cell.getTitle());
         setRating(cell);
         setCheckBox(cell);
     }
 
-    private void setRating(final Tuple tuple){
-        ratingBar.setRating(tuple.getRating());
-        ratingBar.setEnabled(tuple.isEnabled());
+    private void setRating(final RatingCell ratingCell){
+        ratingBar.setRating(ratingCell.getRating());
+        ratingBar.setEnabled(ratingCell.isEnabled());
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(final RatingBar ratingBar,
@@ -55,22 +55,22 @@ public final class RecyclerViewViewHolder extends AbsResultHolder {
         });
     }
 
-    private void setCheckBox(final Tuple tuple){
+    private void setCheckBox(final RatingCell ratingCell){
 
-        final boolean enabled = tuple.isEnabled();
+        final boolean enabled = ratingCell.isEnabled();
         checkBox.setEnabled(enabled);
         if (!enabled){
             checkBox.setVisibility(View.GONE);
         }
 
-        if (tuple.isEnabled()){
-            if(!tuple.checkIsNeeded()){
+        if (ratingCell.isEnabled()){
+            if(!ratingCell.checkIsNeeded()){
                 checkBox.setVisibility(View.GONE);
             } else {
                 checkBox.setVisibility(View.VISIBLE);
-                checkBox.setText(tuple.getCheckBoxText());
+                checkBox.setText(ratingCell.getCheckBoxText());
 
-                if (tuple.isChecked()) {
+                if (ratingCell.isChecked()) {
                     checkBox.performClick();
                     ratingBar.setEnabled(false);
                 }

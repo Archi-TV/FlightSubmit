@@ -11,8 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.ex.cells.AbsResultCell;
 import com.example.ex.cells.ButtonCell;
-import com.example.ex.cells.Tuple;
-
+import com.example.ex.cells.RatingCell;
 import java.util.ArrayList;
 
 public class MainViewModel extends ViewModel {
@@ -21,8 +20,8 @@ public class MainViewModel extends ViewModel {
     private static final int DEFAULT_SLEEP_TIME = 200;
     private static final int HUNDRED = 100;
 
-    private final MutableLiveData<State> tupleLiveData = new MutableLiveData<>();
-    private final ArrayList<AbsResultCell> tupleArrayList = new ArrayList<>();
+    private final MutableLiveData<State> cellLiveData = new MutableLiveData<>();
+    private final ArrayList<AbsResultCell> cellArrayList = new ArrayList<>();
     private final State state;
     private final MutableLiveData<String> toastMessageObserver = new MutableLiveData<>();
     private int progressBarStatus;
@@ -31,7 +30,7 @@ public class MainViewModel extends ViewModel {
 
     public MainViewModel() {
         state = new State();
-        tupleLiveData.setValue(state);
+        cellLiveData.setValue(state);
     }
 
     public final LiveData<String> getToastObserver(){
@@ -41,7 +40,7 @@ public class MainViewModel extends ViewModel {
     public void update(final FragmentActivity activity, final RecyclerView recyclerView){
         populateList();
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(activity,
-                tupleArrayList, new TripListActionListener() {
+                cellArrayList, new TripListActionListener() {
             @Override
             public void onKeyClick(final String text) {
                 state.setText(text);
@@ -50,9 +49,9 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onRatingChanged(final int adapterPosition, final int rating) {
 
-                final Tuple tuple = (Tuple) tupleArrayList.get(adapterPosition);
+                final RatingCell ratingCell = (RatingCell) cellArrayList.get(adapterPosition);
 
-                switch (tuple.getIndex()){
+                switch (ratingCell.getIndex()){
                     case 0:
                         state.setPeople(rating);
                         break;
@@ -69,7 +68,7 @@ public class MainViewModel extends ViewModel {
                         state.setFood(rating);
                         break;
                     default:
-                        state.setAircraft(tuple.getIndex());
+                        state.setAircraft(ratingCell.getIndex());
                 }
             }
 
@@ -99,28 +98,28 @@ public class MainViewModel extends ViewModel {
     }
 
     public MutableLiveData<State> getUserMutableLiveData() {
-        return tupleLiveData;
+        return cellLiveData;
     }
 
     private void populateList(){
-        tupleArrayList.clear();
-        addTuple("How crowded was the flight?", state.getPeople(), false, 0);
-        addTuple("How do you rate the aircraft?", state.getAircraft(), false, 1);
-        addTuple("How do you rate the seats?", state.getSeat(), false, 2);
-        addTuple("How do you rate the crew?", state.getCrew(), false, 3);
-        addTuple("How do you rate the food?", state.getFood(), true, 4);
+        cellArrayList.clear();
+        addCell("How crowded was the flight?", state.getPeople(), false, 0);
+        addCell("How do you rate the aircraft?", state.getAircraft(), false, 1);
+        addCell("How do you rate the seats?", state.getSeat(), false, 2);
+        addCell("How do you rate the crew?", state.getCrew(), false, 3);
+        addCell("How do you rate the food?", state.getFood(), true, 4);
 
         final ButtonCell cell = new ButtonCell(AbsResultCell.ViewType.BUTTON, state.getText(), state.isEnabled());
-        tupleArrayList.add(cell);
+        cellArrayList.add(cell);
     }
 
-    private void addTuple(final String title, final int rating, final boolean flag, final int index){
+    private void addCell(final String title, final int rating, final boolean flag, final int index){
 
         final AbsResultCell.ViewType viewType = index == 0
                 ? AbsResultCell.ViewType.CUSTOM_RATING : AbsResultCell.ViewType.RATING;
-        final Tuple tuple = new Tuple(title, rating, state.getFood() == -1, flag,
+        final RatingCell ratingCell = new RatingCell(title, rating, state.getFood() == -1, flag,
                 index, viewType, state.isEnabled());
-        tupleArrayList.add(tuple);
+        cellArrayList.add(ratingCell);
     }
 
 
@@ -151,7 +150,7 @@ public class MainViewModel extends ViewModel {
 
     private void enableViews(final boolean enabled){
         state.setEnabled(enabled);
-        tupleLiveData.setValue(state);
+        cellLiveData.setValue(state);
     }
 
     private void show(){

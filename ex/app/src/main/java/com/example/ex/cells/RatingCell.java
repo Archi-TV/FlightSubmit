@@ -1,6 +1,6 @@
 package com.example.ex.cells;
 
-public class Tuple extends AbsResultCell {
+public class RatingCell extends AbsResultCell {
     private final String title;
     private final int rating;
     private final boolean checked;
@@ -10,9 +10,9 @@ public class Tuple extends AbsResultCell {
     private final boolean enabled;
 
 
-    public Tuple(final String title, final int rating,
-                 final boolean checked, final boolean needsCheck, int index,
-                 ViewType viewType, final boolean enabled){
+    public RatingCell(final String title, final int rating,
+                      final boolean checked, final boolean needsCheck, int index,
+                      ViewType viewType, final boolean enabled){
         super(viewType);
         this.title = title;
         this.enabled = enabled;

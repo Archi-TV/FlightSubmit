@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Activity context;
-    private final ArrayList<AbsResultCell> tupleArrayList;
+    private final ArrayList<AbsResultCell> cellArrayList;
     private final AbsResultCell.ViewType[] viewTypeValues = AbsResultCell.ViewType.values();
     private final TripListActionListener tripListActionListener;
 
@@ -23,7 +23,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @NonNull final TripListActionListener tripListActionListener) {
         this.tripListActionListener = tripListActionListener;
         this.context = context;
-        this.tupleArrayList = tupleArrayList;
+        this.cellArrayList = tupleArrayList;
     }
 
     @NonNull
@@ -53,21 +53,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-        final AbsResultCell tuple = tupleArrayList.get(position);
-        ((AbsResultHolder) holder).bind(tuple);
+        final AbsResultCell cell = cellArrayList.get(position);
+        ((AbsResultHolder) holder).bind(cell);
     }
 
 
 
     @Override
     public int getItemCount() {
-        return tupleArrayList.size();
+        return cellArrayList.size();
     }
 
 
     @Override
     public int getItemViewType(final int position) {
-        return tupleArrayList.get(position).getViewType().ordinal();
+        return cellArrayList.get(position).getViewType().ordinal();
     }
 
 }
