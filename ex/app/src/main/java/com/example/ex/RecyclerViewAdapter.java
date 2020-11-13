@@ -4,11 +4,6 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.ex.cells.AbsResultCell;
@@ -21,22 +16,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private final Activity context;
     private final ArrayList<AbsResultCell> tupleArrayList;
-    private final MainViewModel viewModel;
     private final AbsResultCell.ViewType[] viewTypeValues = AbsResultCell.ViewType.values();
     private final TripListActionListener tripListActionListener;
 
-    public interface TripListActionListener {
-        void onKeyClick(String text);
-        void onRatingChanged(final int adapterPosition, final int rating);
-        void onCheckBoxClick(final RatingBar ratingBar, final CheckBox checkBox);
-        void onButtonClick(final ProgressBar progressBar, final Button button, final EditText editText);
-    }
-
-    RecyclerViewAdapter(final Activity context, final MainViewModel viewModel,
-                        ArrayList<AbsResultCell> tupleArrayList, @NonNull final TripListActionListener tripListActionListener) {
+    RecyclerViewAdapter(final Activity context, ArrayList<AbsResultCell> tupleArrayList,
+                        @NonNull final TripListActionListener tripListActionListener) {
         this.tripListActionListener = tripListActionListener;
         this.context = context;
-        this.viewModel = viewModel;
         this.tupleArrayList = tupleArrayList;
     }
 

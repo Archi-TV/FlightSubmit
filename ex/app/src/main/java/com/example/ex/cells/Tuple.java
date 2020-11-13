@@ -7,12 +7,15 @@ public class Tuple extends AbsResultCell {
     private final String checkBoxText;
     private final boolean needsCheck;
     private final int index;
+    private final boolean enabled;
 
 
     public Tuple(final String title, final int rating,
-                 final boolean checked, final boolean needsCheck, int index, ViewType viewType){
+                 final boolean checked, final boolean needsCheck, int index,
+                 ViewType viewType, final boolean enabled){
         super(viewType);
         this.title = title;
+        this.enabled = enabled;
         this.rating = rating;
         this.checked = checked;
         this.needsCheck = needsCheck;
@@ -22,6 +25,10 @@ public class Tuple extends AbsResultCell {
             checkBoxText = "";
         }
         this.index = index;
+    }
+
+    public final boolean isEnabled(){
+        return enabled;
     }
 
     public final int getIndex(){

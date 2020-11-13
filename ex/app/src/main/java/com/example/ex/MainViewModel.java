@@ -1,11 +1,7 @@
 package com.example.ex;
 
 import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
@@ -21,7 +17,7 @@ import java.util.ArrayList;
 
 public class MainViewModel extends ViewModel {
 
-    private static final int PROGRESS_STEP = 20;
+    private static final int PROGRESS_STEP = 5;
     private static final int DEFAULT_SLEEP_TIME = 200;
     private static final int HUNDRED = 100;
 
@@ -38,14 +34,14 @@ public class MainViewModel extends ViewModel {
         tupleLiveData.setValue(state);
     }
 
-    public LiveData<String> getToastObserver(){
+    public final LiveData<String> getToastObserver(){
         return toastMessageObserver;
     }
 
     public void update(final FragmentActivity activity, final RecyclerView recyclerView){
         populateList();
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(activity,
-                this, tupleArrayList, new RecyclerViewAdapter.TripListActionListener() {
+                tupleArrayList, new TripListActionListener() {
             @Override
             public void onKeyClick(final String text) {
                 state.setText(text);
@@ -78,9 +74,10 @@ public class MainViewModel extends ViewModel {
             }
 
             @Override
-            public void onButtonClick(final ProgressBar progressBar, final Button button, final EditText editText) {
-                setupLoading(progressBar, button, editText);
-                runAsync(progressBar, button, editText);
+            public void onButtonClick() {
+                enableViews(false);
+                progressBarStatus = 0;
+                runAsync();
             }
 
             @Override
@@ -113,7 +110,7 @@ public class MainViewModel extends ViewModel {
         addTuple("How do you rate the crew?", state.getCrew(), false, 3);
         addTuple("How do you rate the food?", state.getFood(), true, 4);
 
-        final ButtonCell cell = new ButtonCell(AbsResultCell.ViewType.BUTTON, state.getText());
+        final ButtonCell cell = new ButtonCell(AbsResultCell.ViewType.BUTTON, state.getText(), state.isEnabled());
         tupleArrayList.add(cell);
     }
 
@@ -122,35 +119,25 @@ public class MainViewModel extends ViewModel {
         final AbsResultCell.ViewType viewType = index == 0
                 ? AbsResultCell.ViewType.CUSTOM_RATING : AbsResultCell.ViewType.RATING;
         final Tuple tuple = new Tuple(title, rating, state.getFood() == -1, flag,
-                index, viewType);
+                index, viewType, state.isEnabled());
         tupleArrayList.add(tuple);
     }
 
 
-    private void setupLoading(final ProgressBar progressBar, final Button button, final EditText editText){
-        progressBarStatus = 0;
-        progressBar.setVisibility(View.VISIBLE);
-        enableViews(false, button, editText);
-    }
-
-    private void runAsync(final ProgressBar progressBar, final Button button, final EditText editText){
+    private void runAsync(){
         new Thread(new Runnable() {
             public void run() {
                 while (progressBarStatus < HUNDRED) {
                     progressBarStatus += PROGRESS_STEP;
-                    // Update the progress bar
                     progressBarHandler.post(new Runnable() {
                         public void run() {
-                            progressBar.setProgress(progressBarStatus);
-                            if (progressBarStatus >= HUNDRED){
-                                progressBar.setVisibility(View.GONE);
+                            if (progressBarStatus >= HUNDRED){;
                                 show();
-                                enableViews(true, button, editText);
+                                enableViews(true);
                             }
                         }
                     });
                     try {
-                        // Sleep for 200 milliseconds.
                         Thread.sleep(DEFAULT_SLEEP_TIME);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -162,12 +149,9 @@ public class MainViewModel extends ViewModel {
 
 
 
-    private void enableViews(final boolean enabled, final Button button, final EditText editText){
-        button.setEnabled(enabled);
-        editText.setFocusable(enabled);
-        editText.setEnabled(enabled);
-        editText.setClickable(enabled);
-        editText.setFocusableInTouchMode(enabled);
+    private void enableViews(final boolean enabled){
+        state.setEnabled(enabled);
+        tupleLiveData.setValue(state);
     }
 
     private void show(){

@@ -12,7 +12,7 @@ import android.widget.RatingBar;
 
 public class ScrollingActivity extends AppCompatActivity{
 
-    private RatingBar rb;
+    private  RatingBar rb;
     private MainViewModel viewModel;
 
 
@@ -33,6 +33,7 @@ public class ScrollingActivity extends AppCompatActivity{
                     return;
                 }
                 rb.setRating(state.getFlight());
+                rb.setEnabled(state.isEnabled());
             }
         });
 

@@ -8,6 +8,7 @@ public final class State {
     private int aircraft;
     private int seat;
     private int people;
+    private boolean enabled = true;
 
     @Override
     public String toString() {
@@ -45,6 +46,10 @@ public final class State {
         this.text = text;
     }
 
+    public void setEnabled(boolean enabled){
+        this.enabled = enabled;
+    }
+
     int getAircraft() {
         return aircraft;
     }
@@ -71,5 +76,9 @@ public final class State {
 
     public String getText() {
         return text;
+    }
+
+    public boolean isEnabled(){
+        return enabled;
     }
 }
