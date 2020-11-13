@@ -10,46 +10,28 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class MainFragment extends Fragment {
 
 
-    private static final int UPPER_BOUND = 1000000;
-    private static final int DEFAULT_SLEEP_TIME = 1000;
-    private static final int HUNDRED = 100;
     private MainViewModel viewModel;
     private RecyclerView recyclerView;
-    private RecyclerViewAdapter recyclerViewAdapter;
-    private EditText editText;
     private IAttachable listener;
-    private ProgressBar progressBar;
-    private int progressBarStatus;
-    private final Handler progressBarHandler = new Handler();
-    private long loading;
-    private LinearLayout layout;
 
 
-    private final Observer<ArrayList<Tuple>> tupleListUpdateObserver = new Observer<ArrayList<Tuple>>() {
-        @Override
-        public void onChanged(final ArrayList<Tuple> tupleArrayList) {
-            final FragmentActivity activity = getActivity();
-            recyclerViewAdapter = new RecyclerViewAdapter(activity, tupleArrayList);
-            recyclerView.setLayoutManager(new LinearLayoutManager(activity));
-            recyclerView.setAdapter(recyclerViewAdapter);
-        }
-    };
+        private final Observer<State> updateObserver = new Observer<State>() {
+            @Override
+            public void onChanged(final State tupleArrayList) {
+                final FragmentActivity activity = getActivity();
+                RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(activity, viewModel);
+                recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+                recyclerView.setAdapter(recyclerViewAdapter);
+            }
+        };
 
     @Override
     public void onAttach(final Context context) {
@@ -73,9 +55,7 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.fragment, container, false);
-        layout = v.findViewById(R.id.linear_layout);
-        return v;
+        return inflater.inflate(R.layout.fragment, container, false);
     }
 
     @Override
@@ -87,117 +67,13 @@ public class MainFragment extends Fragment {
         }
         recyclerView = getView().findViewById(R.id.rv_main);
 
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), tupleListUpdateObserver);
-        listener.passStateToActivity(viewModel.getState());
-
-        initProgressBar();
-        initButton();
-        initEditText();
-    }
-
-    private void initProgressBar(){
-        progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal);
-        progressBar.setVisibility(View.GONE);
-        progressBar.setProgress(0);
-        progressBar.setMax(HUNDRED);
-        layout.addView(progressBar);
-    }
-
-    private void initEditText(){
-        if (getView() == null) {
-            return;
+        try {
+            viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        } catch (Exception e) {
+            show(e.getMessage());
         }
-        editText = (EditText)getView().findViewById(R.id.et_feedback);
-        editText.setText(viewModel.getState().getText());
-    }
-
-    private void initButton(){
-        final View v = getView();
-        if (v == null) {
-            return;
-        }
-        final Button submit = (Button)v.findViewById(R.id.b_submit);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                saveState();
-                Log.i("submission", "State is saved");
-                setupLoading();
-                runAsync();
-                Log.i("AsyncTask", "AsyncTask was started");
-            }
-        });
-    }
-
-    private void setupLoading(){
-        progressBarStatus = 0;
-        loading = 0;
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void runAsync(){
-        new Thread(new Runnable(){
-            public void run(){
-                while (progressBarStatus < HUNDRED){
-                    progressBarStatus = simulateDoingSmthInteresting();
-                    try {
-                        Thread.sleep(DEFAULT_SLEEP_TIME);
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    progressBarHandler.post(new Runnable() {
-                        public void run() {
-                            progressBar.setProgress(progressBarStatus);
-                            if (progressBarStatus == HUNDRED){
-                                show(viewModel.getState().toString());
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-                }
-                try {
-                    Thread.sleep(2 * DEFAULT_SLEEP_TIME);
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    private int simulateDoingSmthInteresting() {
-
-        while (loading <= UPPER_BOUND) {
-            ++loading;
-
-            if (loading == UPPER_BOUND / 3) {
-                return HUNDRED / 3;
-            } else if (loading == UPPER_BOUND * 2 / 3) {
-                return HUNDRED * 2 / 3;
-            } else if (loading == UPPER_BOUND * 4 / 5) {
-                return HUNDRED * 4 / 5;
-            }
-        }
-
-        return HUNDRED;
-
-    }
-
-    private void saveState(){
-        final State state = viewModel.getState();
-        final ArrayList<Tuple> tupleArrayList = recyclerViewAdapter.getTupleArrayList();
-
-        state.setPeople(tupleArrayList.get(0).getRating());
-        state.setAircraft(tupleArrayList.get(1).getRating());
-        state.setSeat(tupleArrayList.get(2).getRating());
-        state.setCrew(tupleArrayList.get(3).getRating());
-        if (tupleArrayList.get(4).isChecked()) {
-            state.setFood(-1);
-        } else {
-            state.setFood(tupleArrayList.get(4).getRating());
-        }
-
-        state.setText(editText.getText().toString());
+        viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), updateObserver);
+        listener.passStateToActivity(viewModel.getUserMutableLiveData().getValue());
     }
 
 
@@ -205,5 +81,11 @@ public class MainFragment extends Fragment {
         Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        recyclerView = null;
+        viewModel = null;
+    }
 }
 

@@ -1,96 +1,68 @@
 package com.example.ex;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.RatingBar;
-import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.ex.cells.AbsResultCell;
+import com.example.ex.cells.ButtonCell;
+import com.example.ex.cells.Tuple;
+import com.example.ex.holder.AbsResultHolder;
+import com.example.ex.holder.RecyclerViewHolderButton;
+import com.example.ex.holder.RecyclerViewViewHolder;
+
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Activity context;
-    private ArrayList<Tuple> tupleArrayList;
-    private boolean flag = true;
+    private final Activity context;
+    private final ArrayList<AbsResultCell> tupleArrayList = new ArrayList<>();
+    private final MainViewModel viewModel;
+    private final State state;
+    private final AbsResultCell.ViewType[] viewTypeValues = AbsResultCell.ViewType.values();
 
-    RecyclerViewAdapter(final Activity context, final ArrayList<Tuple> tupleArrayList) {
+    RecyclerViewAdapter(final Activity context, final MainViewModel viewModel) {
         this.context = context;
-        this.tupleArrayList = tupleArrayList;
-    }
-
-    ArrayList<Tuple> getTupleArrayList(){
-        return tupleArrayList;
+        this.viewModel = viewModel;
+        state = viewModel.getUserMutableLiveData().getValue();
+        populateList();
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
         final View rootView;
-        if (flag)
-        {
-            flag = false;
-            rootView = LayoutInflater.from(context)
-                    .inflate(R.layout.adapter_item_with_custom_ratingbar,parent,false);
-        } else {
-            rootView = LayoutInflater.from(context)
-                    .inflate(R.layout.adapter_item_with_star_ratingbar,parent,false);
-        }
 
-        return new RecyclerViewViewHolder(rootView);
+        final AbsResultCell.ViewType type = viewTypeValues[viewType];
+        switch (type) {
+            case RATING:
+                rootView = LayoutInflater.from(context)
+                        .inflate(R.layout.adapter_item_with_star_ratingbar,parent,false);
+                break;
+            case BUTTON:
+                rootView = LayoutInflater.from(context)
+                        .inflate(R.layout.adapter_item_text_button_progress,parent,false);
+                return new RecyclerViewHolderButton(rootView, viewModel);
+            case CUSTOM_RATING:
+                rootView = LayoutInflater.from(context)
+                        .inflate(R.layout.adapter_item_with_custom_ratingbar,parent,false);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown ViewType: " + viewType);
+        }
+        return new RecyclerViewViewHolder(rootView, viewModel);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-        final Tuple tuple = tupleArrayList.get(position);
-        final RecyclerViewViewHolder viewHolder = (RecyclerViewViewHolder) holder;
-        viewHolder.txtView_title.setText(tuple.getTitle());
-
-        setRating(tuple, viewHolder);
-        setCheckBox(tuple, viewHolder);
+        final AbsResultCell tuple = tupleArrayList.get(position);
+        ((AbsResultHolder) holder).bind(tuple);
     }
 
-    private void setRating(final Tuple tuple, final RecyclerViewViewHolder viewHolder){
-        viewHolder.ratingBar.setRating(tuple.getRating());
-        viewHolder.ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(final RatingBar ratingBar,
-                                        final float rating, final boolean fromUser) {
-                tuple.setRating((int)rating);
-                Log.i("rating", Integer.toString((int)rating));
-            }
-        });
-    }
-
-    private void setCheckBox(final Tuple tuple, final RecyclerViewViewHolder viewHolder){
-
-        if(tuple.getCheckBoxText() == null){
-            viewHolder.checkBox.setVisibility(View.GONE);
-        } else{
-            viewHolder.checkBox.setVisibility(View.VISIBLE);
-            viewHolder.checkBox.setText(tuple.getCheckBoxText());
-
-
-            viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(final View v) {
-                    viewHolder.ratingBar.setRating(0);
-                    viewHolder.ratingBar.setEnabled(!viewHolder.checkBox.isChecked());
-                    tuple.setChecked(viewHolder.checkBox.isChecked());
-                    Log.i("checkBox", "OK");
-                }
-            });
-
-            if (tuple.isChecked()) {
-                viewHolder.checkBox.performClick();
-            }
-        }
-    }
 
 
     @Override
@@ -98,16 +70,31 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return tupleArrayList.size();
     }
 
-    private final class RecyclerViewViewHolder extends RecyclerView.ViewHolder {
-        private final RatingBar ratingBar;
-        private final TextView txtView_title;
-        private final CheckBox checkBox;
 
-        private RecyclerViewViewHolder(@NonNull final View itemView) {
-            super(itemView);
-            ratingBar = itemView.findViewById(R.id.ratingBar);
-            txtView_title = itemView.findViewById(R.id.txtView_title);
-            checkBox = itemView.findViewById(R.id.checkBox);
-        }
+    private void populateList(){
+        tupleArrayList.clear();
+        addTuple("How crowded was the flight?", state.getPeople(), false, 0);
+        addTuple("How do you rate the aircraft?", state.getAircraft(), false, 1);
+        addTuple("How do you rate the seats?", state.getSeat(), false, 2);
+        addTuple("How do you rate the crew?", state.getCrew(), false, 3);
+        addTuple("How do you rate the food?", state.getFood(), true, 4);
+
+        final ButtonCell cell = new ButtonCell(AbsResultCell.ViewType.BUTTON);
+        tupleArrayList.add(cell);
     }
+
+    private void addTuple(final String title, final int rating, final boolean flag, final int index){
+
+        final AbsResultCell.ViewType viewType = index == 0
+                ? AbsResultCell.ViewType.CUSTOM_RATING : AbsResultCell.ViewType.RATING;
+        final Tuple tuple = new Tuple(title, rating, state.getFood() == -1, flag,
+                index, viewType);
+        tupleArrayList.add(tuple);
+    }
+
+    @Override
+    public int getItemViewType(final int position) {
+        return tupleArrayList.get(position).getViewType().ordinal();
+    }
+
 }

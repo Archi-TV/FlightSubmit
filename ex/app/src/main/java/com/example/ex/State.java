@@ -12,16 +12,16 @@ public final class State {
     @Override
     public String toString() {
         return "text: " + "\"" + text + "\""
-                + ";  food: " + (food == -1 ? "null" : food) + ";  flight: " + flight
-                + ";  crew: " + crew + ";  aircraft: " + aircraft + ";  seat: " + seat
-                + ";  people: " + people;
+                + ";  food: " + (food == -1 ? "null" : (food + 1)) + ";  flight: " + (flight + 1)
+                + ";  crew: " + (crew + 1) + ";  aircraft: " + (aircraft + 1) + ";  seat: " + (seat + 1)
+                + ";  people: " + (people + 1);
     }
 
-    void setAircraft(final int aircraft) {
+    public void setAircraft(final int aircraft) {
         this.aircraft = aircraft;
     }
 
-    void setCrew(final int crew) {
+    public void setCrew(final int crew) {
         this.crew = crew;
     }
 
@@ -29,19 +29,19 @@ public final class State {
         this.flight = flight;
     }
 
-    void setFood(final int food) {
+    public void setFood(final int food) {
         this.food = food;
     }
 
-    void setPeople(final int people) {
+    public void setPeople(final int people) {
         this.people = people;
     }
 
-    void setSeat(final int seat) {
+    public void setSeat(final int seat) {
         this.seat = seat;
     }
 
-    void setText(final String text) {
+    public void setText(final String text) {
         this.text = text;
     }
 
@@ -57,7 +57,7 @@ public final class State {
         return flight;
     }
 
-    int getFood() {
+    public int getFood() {
         return food;
     }
 
@@ -69,7 +69,7 @@ public final class State {
         return seat;
     }
 
-    String getText() {
+    public String getText() {
         return text;
     }
 }

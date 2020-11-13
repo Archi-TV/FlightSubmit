@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
+        app:elevation="0dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -20,13 +21,14 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            app:scrimAnimationDuration="0"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="80dp"
                 app:layout_collapseMode="pin"
                 android:background="@drawable/toolbar_back"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
@@ -71,7 +73,7 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:layout_gravity="center"
-                    android:paddingTop="5dp"
+                    android:paddingBottom="15dp"
                     android:src="@drawable/logo" />
             </LinearLayout>
 
