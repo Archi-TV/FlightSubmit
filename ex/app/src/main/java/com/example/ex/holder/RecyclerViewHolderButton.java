@@ -8,10 +8,10 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
-import com.example.ex.MainViewModel;
 import com.example.ex.R;
 import com.example.ex.RecyclerViewAdapter;
 import com.example.ex.cells.AbsResultCell;
+import com.example.ex.cells.ButtonCell;
 
 public class RecyclerViewHolderButton extends AbsResultHolder {
 
@@ -20,15 +20,13 @@ public class RecyclerViewHolderButton extends AbsResultHolder {
     private final Button button;
     private final EditText editText;
     private final ProgressBar progressBar;
-    private final MainViewModel viewModel;
     private final RecyclerViewAdapter.TripListActionListener tripListActionListener;
 
-    public RecyclerViewHolderButton(@NonNull View itemView, MainViewModel viewModel,
+    public RecyclerViewHolderButton(@NonNull View itemView,
                                     RecyclerViewAdapter.TripListActionListener tripListActionListener) {
         super(itemView);
 
         this.tripListActionListener = tripListActionListener;
-        this.viewModel = viewModel;
         button = itemView.findViewById(R.id.b_submit);
         editText = itemView.findViewById(R.id.et_feedback);
         progressBar = itemView.findViewById(R.id.progressBar);
@@ -38,12 +36,12 @@ public class RecyclerViewHolderButton extends AbsResultHolder {
     public void bind(@NonNull AbsResultCell cell) {
         initProgressBar();
         initButton();
-        initEditText();
+        initEditText((ButtonCell) cell);
     }
 
-    private void initEditText(){
+    private void initEditText(ButtonCell cell){
 
-        editText.setText(viewModel.getUserMutableLiveData().getValue().getText());
+        editText.setText(cell.getText());
 
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override

@@ -9,15 +9,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ex.cells.AbsResultCell;
 import com.example.ex.holder.AbsResultHolder;
 import com.example.ex.holder.RecyclerViewHolderButton;
 import com.example.ex.holder.RecyclerViewViewHolder;
-
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -57,7 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case BUTTON:
                 rootView = LayoutInflater.from(context)
                         .inflate(R.layout.adapter_item_text_button_progress,parent,false);
-                return new RecyclerViewHolderButton(rootView, viewModel, tripListActionListener);
+                return new RecyclerViewHolderButton(rootView, tripListActionListener);
             case CUSTOM_RATING:
                 rootView = LayoutInflater.from(context)
                         .inflate(R.layout.adapter_item_with_custom_ratingbar,parent,false);
@@ -65,7 +62,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             default:
                 throw new IllegalArgumentException("Unknown ViewType: " + viewType);
         }
-        return new RecyclerViewViewHolder(rootView, viewModel, tripListActionListener);
+        return new RecyclerViewViewHolder(rootView, tripListActionListener);
     }
 
     @Override

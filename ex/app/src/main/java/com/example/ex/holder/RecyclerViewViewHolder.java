@@ -7,8 +7,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.ex.MainViewModel;
 import com.example.ex.R;
 import com.example.ex.RecyclerViewAdapter;
 import com.example.ex.cells.AbsResultCell;
@@ -20,7 +18,7 @@ public final class RecyclerViewViewHolder extends AbsResultHolder {
     private final CheckBox checkBox;
     private final RecyclerViewAdapter.TripListActionListener tripListActionListener;
 
-    public RecyclerViewViewHolder(@NonNull final View itemView, MainViewModel viewModel,
+    public RecyclerViewViewHolder(@NonNull final View itemView,
                                   RecyclerViewAdapter.TripListActionListener tripListActionListener) {
         super(itemView);
         this.tripListActionListener = tripListActionListener;

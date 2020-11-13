@@ -7,14 +7,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ex.cells.AbsResultCell;
 import com.example.ex.cells.ButtonCell;
 import com.example.ex.cells.Tuple;
@@ -23,16 +21,14 @@ import java.util.ArrayList;
 
 public class MainViewModel extends ViewModel {
 
-    private static final int UPPER_BOUND = 1000000;
-    private static final int DEFAULT_SLEEP_TIME = 1000;
+    private static final int PROGRESS_STEP = 20;
+    private static final int DEFAULT_SLEEP_TIME = 200;
     private static final int HUNDRED = 100;
 
     private final MutableLiveData<State> tupleLiveData = new MutableLiveData<>();
     private final ArrayList<AbsResultCell> tupleArrayList = new ArrayList<>();
     private final State state;
-
     private final MutableLiveData<String> toastMessageObserver = new MutableLiveData<>();
-
     private int progressBarStatus;
     private final Handler progressBarHandler = new Handler();
 
@@ -46,7 +42,7 @@ public class MainViewModel extends ViewModel {
         return toastMessageObserver;
     }
 
-    public void update(FragmentActivity activity, RecyclerView recyclerView){
+    public void update(final FragmentActivity activity, final RecyclerView recyclerView){
         populateList();
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(activity,
                 this, tupleArrayList, new RecyclerViewAdapter.TripListActionListener() {
@@ -117,7 +113,7 @@ public class MainViewModel extends ViewModel {
         addTuple("How do you rate the crew?", state.getCrew(), false, 3);
         addTuple("How do you rate the food?", state.getFood(), true, 4);
 
-        final ButtonCell cell = new ButtonCell(AbsResultCell.ViewType.BUTTON);
+        final ButtonCell cell = new ButtonCell(AbsResultCell.ViewType.BUTTON, state.getText());
         tupleArrayList.add(cell);
     }
 
@@ -140,13 +136,13 @@ public class MainViewModel extends ViewModel {
     private void runAsync(final ProgressBar progressBar, final Button button, final EditText editText){
         new Thread(new Runnable() {
             public void run() {
-                while (progressBarStatus < 100) {
-                    progressBarStatus += 30;
+                while (progressBarStatus < HUNDRED) {
+                    progressBarStatus += PROGRESS_STEP;
                     // Update the progress bar
                     progressBarHandler.post(new Runnable() {
                         public void run() {
                             progressBar.setProgress(progressBarStatus);
-                            if (progressBarStatus >= 100){
+                            if (progressBarStatus >= HUNDRED){
                                 progressBar.setVisibility(View.GONE);
                                 show();
                                 enableViews(true, button, editText);
@@ -155,7 +151,7 @@ public class MainViewModel extends ViewModel {
                     });
                     try {
                         // Sleep for 200 milliseconds.
-                        Thread.sleep(200);
+                        Thread.sleep(DEFAULT_SLEEP_TIME);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -170,6 +166,8 @@ public class MainViewModel extends ViewModel {
         button.setEnabled(enabled);
         editText.setFocusable(enabled);
         editText.setEnabled(enabled);
+        editText.setClickable(enabled);
+        editText.setFocusableInTouchMode(enabled);
     }
 
     private void show(){
