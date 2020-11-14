@@ -10,6 +10,10 @@ public final class State {
     private int people;
     private boolean enabled = true;
 
+    /**
+     * String state
+     * @return state info
+     */
     @Override
     public String toString() {
         return "text: " + "\"" + text + "\""

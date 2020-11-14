@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ex.cells.AbsResultCell;
 import com.example.ex.holder.AbsResultHolder;
 import com.example.ex.holder.RecyclerViewHolderButton;
-import com.example.ex.holder.RecyclerViewViewHolder;
+import com.example.ex.holder.RecyclerViewViewHolderRating;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -33,14 +33,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         final AbsResultCell.ViewType type = viewTypeValues[viewType];
         switch (type) {
+            // RecyclerViewHolderRating, rating bar with star style
             case RATING:
                 rootView = LayoutInflater.from(context)
                         .inflate(R.layout.adapter_item_with_star_ratingbar,parent,false);
                 break;
+            // RecyclerViewHolderButton
             case BUTTON:
                 rootView = LayoutInflater.from(context)
                         .inflate(R.layout.adapter_item_text_button_progress,parent,false);
                 return new RecyclerViewHolderButton(rootView, tripListActionListener);
+            // RecyclerViewHolderRating, rating bar with custom style
             case CUSTOM_RATING:
                 rootView = LayoutInflater.from(context)
                         .inflate(R.layout.adapter_item_with_custom_ratingbar,parent,false);
@@ -48,7 +51,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             default:
                 throw new IllegalArgumentException("Unknown ViewType: " + viewType);
         }
-        return new RecyclerViewViewHolder(rootView, tripListActionListener);
+        return new RecyclerViewViewHolderRating(rootView, tripListActionListener);
     }
 
     @Override

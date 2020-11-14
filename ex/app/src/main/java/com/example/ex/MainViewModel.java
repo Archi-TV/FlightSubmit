@@ -37,15 +37,31 @@ public class MainViewModel extends ViewModel {
         return toastMessageObserver;
     }
 
+    /**
+     * Method to update a cell array after the state had changed
+     * @param activity current activity
+     * @param recyclerView recycler view of the activity
+     */
     public void update(final FragmentActivity activity, final RecyclerView recyclerView){
         populateList();
         final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(activity,
                 cellArrayList, new TripListActionListener() {
+            /**
+             * Method realization for RecyclerViewHolderButton for EditText on key click event
+             * It saves text from EditText to the state object
+             * @param text EditText's text
+             */
             @Override
             public void onKeyClick(final String text) {
                 state.setText(text);
             }
 
+            /**
+             * Method realization for RecyclerViewHolderRating for Rating bar on rating change event
+             * It saves new rating to the state object
+             * @param adapterPosition position of current cell in the list
+             * @param rating new rating
+             */
             @Override
             public void onRatingChanged(final int adapterPosition, final int rating) {
 
@@ -72,6 +88,10 @@ public class MainViewModel extends ViewModel {
                 }
             }
 
+            /**
+             * Method realization for RecyclerViewHolderButton for button on click event
+             * It starts a collecting data emulation and enables all input fields
+             */
             @Override
             public void onButtonClick() {
                 enableViews(false);
@@ -79,6 +99,12 @@ public class MainViewModel extends ViewModel {
                 runAsync();
             }
 
+            /**
+             * Method realization for RecyclerViewHolderRating for check box on click event
+             * It sets food rating bar's rating to 0 and saves new instance to the state object
+             * @param ratingBar food rating bar to change
+             * @param checkBox checkbox that was invoked
+             */
             @Override
             public void onCheckBoxClick(final RatingBar ratingBar, final CheckBox checkBox) {
                 ratingBar.setRating(0);
@@ -92,6 +118,8 @@ public class MainViewModel extends ViewModel {
                 }
             }
         });
+
+        // setting a recycler view
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         recyclerView.setItemViewCacheSize(5);
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -101,6 +129,9 @@ public class MainViewModel extends ViewModel {
         return cellLiveData;
     }
 
+    /**
+     * This method recreates a cell list for recycler view
+     */
     private void populateList(){
         cellArrayList.clear();
         addCell("How crowded was the flight?", state.getPeople(), false, 0);
@@ -113,6 +144,13 @@ public class MainViewModel extends ViewModel {
         cellArrayList.add(cell);
     }
 
+    /**
+     * This method creates a new cell and adds it to the cell list
+     * @param title a title of rating bar
+     * @param rating value of rating bar
+     * @param flag tells if this cell needs a checkbox
+     * @param index an index of cell
+     */
     private void addCell(final String title, final int rating, final boolean flag, final int index){
 
         final AbsResultCell.ViewType viewType = index == 0
@@ -123,6 +161,9 @@ public class MainViewModel extends ViewModel {
     }
 
 
+    /**
+     * This method emulates collecting data, calls a show method and enable elements of view
+     */
     private void runAsync(){
         new Thread(new Runnable() {
             public void run() {
@@ -147,12 +188,18 @@ public class MainViewModel extends ViewModel {
     }
 
 
-
+    /**
+     * Enables or disables elements
+     * @param enabled tells if the method should disable or enable views
+     */
     private void enableViews(final boolean enabled){
         state.setEnabled(enabled);
         cellLiveData.setValue(state);
     }
 
+    /**
+     * Changes the livedata with string message to callback to fragment and show the state info
+     */
     private void show(){
         toastMessageObserver.setValue(state.toString());
         toastMessageObserver.setValue(null);

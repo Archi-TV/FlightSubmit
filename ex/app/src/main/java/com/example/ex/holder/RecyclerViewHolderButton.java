@@ -37,6 +37,10 @@ public class RecyclerViewHolderButton extends AbsResultHolder {
         initEditText((ButtonCell) cell);
     }
 
+    /**
+     * this method sets an EditText
+     * @param cell a cell that contains an EditText to set
+     */
     private void initEditText(ButtonCell cell){
 
         editText.setText(cell.getText());
@@ -57,6 +61,10 @@ public class RecyclerViewHolderButton extends AbsResultHolder {
         });
     }
 
+    /***
+     * sets a button
+     * @param cell a cell that contains a button to set
+     */
     private void initButton(ButtonCell cell){
 
         button.setEnabled(cell.isEnabled());
@@ -68,6 +76,10 @@ public class RecyclerViewHolderButton extends AbsResultHolder {
         });
     }
 
+    /**
+     * sets a progress bar
+     * @param cell a cell that contains a progress bar to set
+     */
     private void initProgressBar(ButtonCell cell){
         if (cell.isEnabled()){
             progressBar.setVisibility(View.GONE);

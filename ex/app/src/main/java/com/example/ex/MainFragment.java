@@ -28,6 +28,7 @@ public class MainFragment extends Fragment {
             }
         };
 
+        // Observer to get string info about state and show it
     private final Observer<String> messageObserver = new Observer<String>() {
         @Override
         public void onChanged(final String message) {
@@ -60,7 +61,9 @@ public class MainFragment extends Fragment {
         recyclerView = getView().findViewById(R.id.rv_main);
 
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        // observing state
         viewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), updateObserver);
+        // observing a livedata string, containing info about state
         viewModel.getToastObserver().observe(getViewLifecycleOwner(), messageObserver);
     }
 

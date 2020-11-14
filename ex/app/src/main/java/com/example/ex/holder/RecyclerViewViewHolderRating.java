@@ -12,14 +12,14 @@ import com.example.ex.TripListActionListener;
 import com.example.ex.cells.AbsResultCell;
 import com.example.ex.cells.RatingCell;
 
-public final class RecyclerViewViewHolder extends AbsResultHolder {
+public final class RecyclerViewViewHolderRating extends AbsResultHolder {
     private final RatingBar ratingBar;
     private final TextView txtView_title;
     private final CheckBox checkBox;
     private final TripListActionListener tripListActionListener;
 
-    public RecyclerViewViewHolder(@NonNull final View itemView,
-                                  TripListActionListener tripListActionListener) {
+    public RecyclerViewViewHolderRating(@NonNull final View itemView,
+                                        TripListActionListener tripListActionListener) {
         super(itemView);
         this.tripListActionListener = tripListActionListener;
         ratingBar = itemView.findViewById(R.id.ratingBar);
@@ -36,6 +36,10 @@ public final class RecyclerViewViewHolder extends AbsResultHolder {
         setCheckBox(cell);
     }
 
+    /**
+     * sets rating bar
+     * @param ratingCell a cell that contains a rating bar to set
+     */
     private void setRating(final RatingCell ratingCell){
         ratingBar.setRating(ratingCell.getRating());
         ratingBar.setEnabled(ratingCell.isEnabled());
@@ -48,6 +52,7 @@ public final class RecyclerViewViewHolder extends AbsResultHolder {
                 if (adapterPosition == RecyclerView.NO_POSITION) {
                     return;
                 }
+
                 tripListActionListener.onRatingChanged(adapterPosition, (int)rating);
 
                 Log.i("rating", Integer.toString((int)rating));
@@ -55,6 +60,10 @@ public final class RecyclerViewViewHolder extends AbsResultHolder {
         });
     }
 
+    /**
+     * This method sets a checkbox
+     * @param ratingCell a cell that contains a checkbox to set
+     */
     private void setCheckBox(final RatingCell ratingCell){
 
         final boolean enabled = ratingCell.isEnabled();
