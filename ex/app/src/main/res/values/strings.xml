@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ex</string>
+    <string name="button_text_submit">Submit</string>
+    <string name="feedback">Leave any feedback</string>
+    <string name="user_input">Share your experience. How was the seat? How was the food? Any tips?</string>
+    <string name="action_settings">Settings</string>
+    <string name="overall_experience_question">How do you rate the overall\nflight experience?</string>
+    <string name="flihgt_info"><![CDATA[LH 3495 - 26 Mar 2019\nSFO -> CDG]]></string>
+</resources>
